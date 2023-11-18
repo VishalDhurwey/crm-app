@@ -1,13 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Customer from './Pages/Customer/Customer';
+import {BrowserRouter,Route,Routes} from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <div>
+      <BrowserRouter>
+      <Routes>
+          <Route path='/' element={ <Customer />}></Route>
+      </Routes>
+      </BrowserRouter>
+    </div>
+   
   </React.StrictMode>
 );
 
