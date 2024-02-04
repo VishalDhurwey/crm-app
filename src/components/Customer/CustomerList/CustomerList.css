@@ -1,0 +1,12 @@
+.st_green{
+    color: white;
+    background-color: rgb(1, 171, 1) !important;
+}
+.st_red{
+    color: white;
+    background-color: rgb(255, 0, 0) !important;
+}
+.st_blue{
+    color: white;
+    background-color: rgb(49, 103, 251) !important;
+}

@@ -1,39 +1,122 @@
-import { useState } from "react";
+import "./CustomerList.css";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import NavBar from "../Navbar/Navbar";
 
    function CustomerList() {
 
-    const[customers,setCustomers]=useState([]);
+    const [customers, setCustomers]=useState([]);
+    const navigate = useNavigate();
 
-    fetch("http://localhost:4000/api/customer")
-            .then(res=>{
-             return  res.json()
-            })
-            .then((res)=>setCustomers(res));
+    useEffect(()=>{
+        fetch("http://localhost:4000/api/customer")
+        .then(res=>{
+         return  res.json()
+        })
+        .then((res)=>setCustomers(res));
+    },[]);
+    
+    function handleNewCustomerClick(){
+        navigate("form");
+    }
+    function handleSignUp(){
+        navigate("SignUp");
+    }
+    function handleLogIn(){
+        navigate("LogIn");
+    }
+    
+    function handleEditClick(name){
+         
+         navigate("/form/" + name)
+    }
+    function handleDeleteClick(name){
+        fetch("http://localhost:4000/api/customer/" +name,{
+            method:"delete"
+        })
+        .then(res=>{return res.json();})
+        .then(res=>{setCustomers(res);});
+    }   
 
+    function getStatusCSS(status){
+        if(status=="New"){
+            return "st_blue";
+        }
+        else if(status=="Accepted"){
+            return "st_green";
+        }
+        else{
+            return "st_red";
+        }
+    }
     return(
+        <div>
+            <NavBar/>
+
+            <button onClick={handleNewCustomerClick} className="btn btn-success">New Customer</button>
+
         <div className="container">
-            <table className="table">
-                <thead>
-                    <tr>
-                       <th scope="col">Name</th>
-                       <th scope="col">Website</th>
-                       <th scope="col">Turnover</th>
-                       <th scope="col">NumberOfEmployees</th>
-                       <th scope="col">CEO</th>
-                       <th scope="col">Established Year</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                </tbody>
-            </table>
+
+          
+    
+        
+
+{
+    customers.length==0 && 
+    <div class="alert alert-primary" role="alert">
+    No Customers are available in system !
+    </div>
+}
+
+{
+
+customers.length>0 &&
+
+<table className="table">
+<thead>
+    <tr>
+       <th scope="col">Name</th>
+       <th scope="col">Website</th>
+       <th scope="col">Turnover</th>
+       <th scope="col">NumberOfEmployees</th>
+       <th scope="col">Status</th>
+       <th scope="col">CEO</th>
+       <th scope="col">Established Year</th>
+    </tr>
+</thead>
+<tbody>
+    {
+        customers.map(c=>
+         
+            <tr>
+            <td>{c.name}</td>
+            <td>{c.website}</td>
+            <td>{c.turnover}</td>
+            <td>{c.employees}</td>
+            <td className={getStatusCSS(c.status)}>
+                {c.status}
+            </td>
+            <td>{c.ceo}</td>
+            <td>{c.year}</td>
+            <td>
+            <button onClick={()=>handleEditClick(c.name)} className="btn btn-warning">Edit</button>
+            </td>
+            <td>
+            <button onClick={()=>handleDeleteClick(c.name)} className="btn btn-danger">Delete</button>
+            </td>   
+            </tr>
+           )
+           
+    }
+  
+
+  
+
+</tbody>
+</table>
+}
+           
+        </div>
         </div>
     );
    };
