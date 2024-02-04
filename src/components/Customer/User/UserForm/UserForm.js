@@ -8,19 +8,33 @@ function UserForm(){
     
     // const [User, setUser] = useState({});
     const [Usertoupdate, setUpdateUser] = useState({});
+    const {username}= useParams();
    
     const navigate = useNavigate();
 
-
+    useEffect(()=>{
+        if(username){
+            fetch("http://localhost:4000/api/user/" + username)
+            .then(res=>{return res.json()})
+            .then(res=>{
+                setUpdateUser(res);
+        });
+        }
+        console.log(username);
+    }, []);
 
     function handleformsubmmit(){
         console.log(Usertoupdate);
-        fetch("http://localhost:4000/api/User/signup",{
-            method: "post",
+        fetch("http://localhost:4000/api/user",{
+            method: username ? "PUT" : "POST",
             body:JSON.stringify(Usertoupdate),
             headers:{"Content-Type":"application/json"},
         })
-        .then(res=>{
+        .then((res)=>{
+            return res.json();
+        })
+        .then((res)=>{
+            console.log(res);
             navigate("/users");
         })
        
@@ -100,7 +114,14 @@ function UserForm(){
             </div>
             <div>
                 <button onClick={handleformsubmmit} className="btn btn-primary float-end" type="button">
-                    Create New User
+                    {
+                        username &&
+                        <span>Update User</span>
+                    }
+                    {
+                        !username &&
+                        <span>Create New User</span>
+                    }
                     </button>
             </div>
 

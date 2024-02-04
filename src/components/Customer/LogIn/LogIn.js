@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function LogIn(){
 
-    const[ logindetails , setLogindetails] = useState({});
+    const[logindetails , setLogindetails] = useState({});
     const[invalidcreds, setInvalidcreds]= useState(false);
     const navigate=useNavigate();
 
@@ -52,7 +52,7 @@ function LogIn(){
             <label className="form-label">Email</label>
             <input
             onInput={(e)=>setLogindetails({...logindetails, email:e.target.value})}
-            type="Email" name="Email" className="form-control"></input>
+            type="email" name="Email" className="form-control"></input>
 
             <label className="form-label">Password</label>
             <input 

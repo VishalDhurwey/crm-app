@@ -43,7 +43,10 @@ function Userlist(){
       .then(res=>{setUsers(res);});
   }   
 
-
+    function handleeditclick(username){
+      
+      navigate("/userform/" + username);
+    }
     
     
 
@@ -89,7 +92,7 @@ function Userlist(){
         
       </td>
 
-      <td> <button  className="btn btn-warning">Edit</button> </td>
+      <td> <button onClick={()=>{handleeditclick(u.username)}} className="btn btn-warning">Edit</button> </td>
       <td> <button  onClick={()=>{handledeleteclick(u.username)}} className="btn btn-danger">Delete</button></td> 
     </tr>
         )

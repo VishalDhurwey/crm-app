@@ -4,8 +4,6 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap';
-import App from './App';
-import Customer from './Pages/Customer/Customer';
 import {BrowserRouter,Route,Routes} from 'react-router-dom';
 import CustomerList from './components/Customer/CustomerList/CustomerList';
 import CustomerForm from './components/Customer/CustomerForm/CustomerForm';
@@ -43,7 +41,7 @@ root.render(
           </SecuredRoutes>
         }></Route>
         <Route path='form/:customername' element={<CustomerForm/>}></Route>
-        <Route path='userform/:userrname' element={<UserForm/>}></Route>
+        <Route path='userform/:username' element={<UserForm/>}></Route>
     </Routes>
     </BrowserRouter>
    
