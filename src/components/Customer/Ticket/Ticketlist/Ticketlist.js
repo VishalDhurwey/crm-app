@@ -17,6 +17,9 @@ function Ticketlist(){
     return(
         <div>
             <Navbar/>
+
+            <a href="/ticketform" className="newbtn btn btn-success">New Ticket</a>
+
             <div className="container">
 
             <table className="table">

@@ -13,6 +13,7 @@ import SecuredRoutes from './components/Customer/SecuredRoutes/SecuredRoutes';
 import Userlist from './components/Customer/User/Userlist';
 import UserForm from './components/Customer/User/UserForm/UserForm';
 import Ticketlist from './components/Customer/Ticket/Ticketlist/Ticketlist';
+import Ticketform from './components/Customer/Ticket/Ticketlist/Ticketform/Ticketform';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -27,6 +28,11 @@ root.render(
          <Route path='/tickets' element={
            <SecuredRoutes>
             <Ticketlist/>
+           </SecuredRoutes>
+        }></Route>
+        <Route path='/ticketform' element={
+           <SecuredRoutes>
+            <Ticketform/>
            </SecuredRoutes>
         }></Route> 
         <Route path='/users' element={

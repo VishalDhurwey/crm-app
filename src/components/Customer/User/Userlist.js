@@ -56,9 +56,9 @@ function Userlist(){
 
             <NavBar/>
 
-            <a href="/userform" className="btn btn-success">New User</a>
+            <a href="/userform" className="newbtn btn btn-success">New User</a>
 
-        <div className="usercontainer">
+        <div className="container">
 
         
 
