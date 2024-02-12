@@ -49,10 +49,10 @@ function LogIn(){
 
             <div className="loginform">
             
-            <label className="form-label">Email</label>
+            <label className="form-label">username</label>
             <input
-            onInput={(e)=>setLogindetails({...logindetails, email:e.target.value})}
-            type="email" name="Email" className="form-control"></input>
+            onInput={(e)=>setLogindetails({...logindetails, username:e.target.value})}
+            type="text" name="Email" className="form-control"></input>
 
             <label className="form-label">Password</label>
             <input 

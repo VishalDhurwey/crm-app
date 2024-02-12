@@ -10,3 +10,21 @@
     color: white;
     background-color: rgb(49, 103, 251) !important;
 }
+
+.header2{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+
+.d-flex{
+    width: 30%;
+}
+
+.pagination{
+    justify-content: center;
+    width: 100%;
+}.table-parent{
+    width: 100%;
+}
