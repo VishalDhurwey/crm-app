@@ -1,13 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../../Navbar/Navbar";
 import "./Ticketform.css";
 import { useNavigate } from "react-router-dom";
 
     function Ticketform(){
 
+        const[users,setUsers] = useState([]);
+        const[customer,setCustomer] = useState([]);
+
         const [ticket,setTicket]=useState({});
         const [valueMissing, setValueMisssing]=useState(false);
         const navigate = useNavigate();
+
+        useEffect(()=>{
+            fetch("http://localhost:4000/api/user")
+            .then((res)=>res.json())
+            .then((parsedRes)=>setUsers(parsedRes));
+
+            fetch("http://localhost:4000/api/customer")
+            .then((res)=>res.json())
+            .then(parsedRes => setCustomer(parsedRes));
+            
+        })
 
         function handlenewticketclick(){
             setValueMisssing(false);
@@ -39,14 +53,22 @@ import { useNavigate } from "react-router-dom";
                 }
             <div className="mb-3">
                 <label className="form-label">Customer Name</label>
-                <input 
-                    value={ticket.customer}
-                    onInput={(e)=>{
+                <select 
+                name = "customer"
+                onChange={
+                    (e)=>{
                         let obj = {...ticket};
                         obj.customer=e.target.value;
                         setTicket(obj);
-                    }}
-                    type="text" className="form-control"></input>
+                }
+            }
+                    className="form-select">
+                   {
+                    customer.map(c=>
+                        <option value={c.name}>{c.name}</option>
+                        )
+                   }
+                </select>
             </div>
             <div className="mb-3">
                 <label htmlFor="desc" className="form-label">Description</label>
@@ -62,14 +84,21 @@ import { useNavigate } from "react-router-dom";
             </div>
             <div className="mb-3">
                 <label className="form-label">Assigned To</label>
-                <input
-                    value={ticket.assignedTo}
-                    onInput={(e)=>{
+                <select 
+                onChange={
+                    (e)=>{
                         let obj = {...ticket};
                         obj.assignedTo=e.target.value;
                         setTicket(obj);
-                    }}
-                type="text" className="form-control"></input>
+                }
+            }
+                    className="form-select">
+                   {
+                    users.map(u=>
+                        <option value={u.name}>{u.name}</option>
+                        )
+                   }
+                </select>
             </div>
             <div className="mb-3">
             <label className="form-label">Status</label>

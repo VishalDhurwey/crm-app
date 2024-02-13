@@ -41,6 +41,11 @@ function Ticketlist(){
       <td>{t.assignedTo}</td>
       <td>{t.status}</td>
       <td>{t.raisedOn}</td>
+
+
+    <td> <button onClick={()=>{}} className="btn btn-warning">Edit</button> </td>
+    <td> <button  onClick={()=>{}} className="btn btn-danger">Delete</button></td> 
+    
     </tr>
         )
 
