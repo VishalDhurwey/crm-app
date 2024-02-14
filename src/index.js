@@ -35,6 +35,14 @@ root.render(
             <Ticketform/>
            </SecuredRoutes>
         }></Route> 
+
+         <Route path='ticketform/:desc' element={
+            <SecuredRoutes>
+         <Ticketform/>
+         </SecuredRoutes>
+         }></Route>
+
+
         <Route path='/users' element={
            <SecuredRoutes>
             <Userlist/>
@@ -54,6 +62,7 @@ root.render(
         }></Route>
         <Route path='form/:customername' element={<CustomerForm/>}></Route>
         <Route path='userform/:username' element={<UserForm/>}></Route>
+        
     </Routes>
     </BrowserRouter>
    

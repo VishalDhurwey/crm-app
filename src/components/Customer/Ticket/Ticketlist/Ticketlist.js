@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../Navbar/Navbar";
 import "./Ticketlist.css";
+import { useNavigate } from "react-router-dom";
 
 function Ticketlist(){
 
     const [tickets, setTickets] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         fetch("http://localhost:4000/api/ticket")
@@ -13,6 +15,12 @@ function Ticketlist(){
             setTickets(parsedres);
         });
     },[])
+
+    function handleeditclick(desc){
+        navigate("/ticketform/"+ desc);
+    }
+
+
 
     return(
         <div>
@@ -30,6 +38,7 @@ function Ticketlist(){
       <th scope="col">Assigned To</th>
       <th scope="col">Status</th>
       <th scope="col">Raised On</th>
+      
     </tr>
   </thead>
   <tbody>
@@ -43,8 +52,8 @@ function Ticketlist(){
       <td>{t.raisedOn}</td>
 
 
-    <td> <button onClick={()=>{}} className="btn btn-warning">Edit</button> </td>
-    <td> <button  onClick={()=>{}} className="btn btn-danger">Delete</button></td> 
+    <td> <button onClick={()=>{handleeditclick(t.desc)}} className="btn btn-warning">Edit</button> </td>
+     
     
     </tr>
         )

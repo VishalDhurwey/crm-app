@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../../Navbar/Navbar";
 import "./Ticketform.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
     function Ticketform(){
 
@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
         const [valueMissing, setValueMisssing]=useState(false);
         const navigate = useNavigate();
 
+        const{desc} = useParams();
+
         useEffect(()=>{
             fetch("http://localhost:4000/api/user")
             .then((res)=>res.json())
@@ -20,8 +22,14 @@ import { useNavigate } from "react-router-dom";
             fetch("http://localhost:4000/api/customer")
             .then((res)=>res.json())
             .then(parsedRes => setCustomer(parsedRes));
+
+            if(desc){
+                fetch("http://localhost:4000/api/ticket/"+desc)
+            .then((res)=>res.json())
+            .then(parsedRes => setTicket(parsedRes));
+            }
             
-        })
+        },[])
 
         function handlenewticketclick(){
             setValueMisssing(false);
@@ -30,7 +38,7 @@ import { useNavigate } from "react-router-dom";
             }
             
             fetch("http://localhost:4000/api/ticket",{
-                method:"POST",
+                method:desc ? "PUT": "POST",
                 body:JSON.stringify(ticket),
                 headers:{"Content-Type":"application/json"},
             })
@@ -55,6 +63,7 @@ import { useNavigate } from "react-router-dom";
                 <label className="form-label">Customer Name</label>
                 <select 
                 name = "customer"
+                disabled={desc}
                 onChange={
                     (e)=>{
                         let obj = {...ticket};
@@ -65,7 +74,7 @@ import { useNavigate } from "react-router-dom";
                     className="form-select">
                    {
                     customer.map(c=>
-                        <option value={c.name}>{c.name}</option>
+                        <option selected={c.name==ticket.customer} value={c.name}>{c.name}</option>
                         )
                    }
                 </select>
@@ -95,7 +104,7 @@ import { useNavigate } from "react-router-dom";
                     className="form-select">
                    {
                     users.map(u=>
-                        <option value={u.name}>{u.name}</option>
+                        <option selected={u.name==ticket.assignedTo} value={u.name}>{u.name}</option>
                         )
                    }
                 </select>
@@ -112,16 +121,18 @@ import { useNavigate } from "react-router-dom";
             }
                     className="form-select">
                     <option value="Select">Please Select</option>
-                    <option value="New">New</option>
-                    <option value="Assigned">Assigned</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Rsolved">Rsolved</option>
+                    <option selected={"New"==ticket.status} value="New">New</option>
+                    <option selected={"Assigned"==ticket.status} value="Assigned">Assigned</option>
+                    <option selected={"In Progress"==ticket.status} value="In Progress">In Progress</option>
+                    <option selected={"Rsolved"==ticket.status} value="Rsolved">Rsolved</option>
                 </select>
             </div> 
             <div className="mb-3">
                 <label className="form-label">Raised On</label>
                 <input
+                name="raisedOn"
                     value={ticket.raisedOn}
+                    readOnly={desc}
                     onInput={(e)=>{
                         let obj = {...ticket};
                         obj.raisedOn=e.target.value;
@@ -130,7 +141,19 @@ import { useNavigate } from "react-router-dom";
                 type="date" className="form-control"></input>
             </div>
 
-            <button onClick={handlenewticketclick} className="btn btn-success float-end">Create Ticket</button>
+            <button onClick={handlenewticketclick} className="btn btn-success float-end">
+               
+               {
+                desc &&
+                <span> Update Ticket</span>
+               }
+               {
+                !desc &&
+                <span> Create Ticket</span>
+               }
+                
+                
+                </button>
             </div>
             </div>
         )
