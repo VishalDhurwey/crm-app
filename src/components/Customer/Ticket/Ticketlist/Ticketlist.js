@@ -38,6 +38,7 @@ function Ticketlist(){
       <th scope="col">Assigned To</th>
       <th scope="col">Status</th>
       <th scope="col">Raised On</th>
+      <th scope="col">Update</th>
       
     </tr>
   </thead>

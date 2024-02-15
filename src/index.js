@@ -13,7 +13,12 @@ import SecuredRoutes from './components/Customer/SecuredRoutes/SecuredRoutes';
 import Userlist from './components/Customer/User/Userlist';
 import UserForm from './components/Customer/User/UserForm/UserForm';
 import Ticketlist from './components/Customer/Ticket/Ticketlist/Ticketlist';
-import Ticketform from './components/Customer/Ticket/Ticketlist/Ticketform/Ticketform';
+import Ticketform from './components/Customer/Ticket/Ticketform/Ticketform';
+
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';  
+import 'primereact/resources/primereact.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

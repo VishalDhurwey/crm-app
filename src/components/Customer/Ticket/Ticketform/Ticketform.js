@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import Navbar from "../../../Navbar/Navbar";
+import Navbar from "../../Navbar/Navbar";
 import "./Ticketform.css";
 import { useNavigate, useParams } from "react-router-dom";
+import { Dropdown } from 'primereact/dropdown';
+        
 
     function Ticketform(){
 
         const[users,setUsers] = useState([]);
-        const[customer,setCustomer] = useState([]);
+        const[customers,setCustomers] = useState([]);
 
         const [ticket,setTicket]=useState({});
         const [valueMissing, setValueMisssing]=useState(false);
@@ -21,10 +23,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
             fetch("http://localhost:4000/api/customer")
             .then((res)=>res.json())
-            .then(parsedRes => setCustomer(parsedRes));
+            .then(parsedRes => setCustomers(parsedRes));
 
             if(desc){
-                fetch("http://localhost:4000/api/ticket/"+desc)
+            fetch("http://localhost:4000/api/ticket/"+desc)
             .then((res)=>res.json())
             .then(parsedRes => setTicket(parsedRes));
             }
@@ -61,7 +63,7 @@ import { useNavigate, useParams } from "react-router-dom";
                 }
             <div className="mb-3">
                 <label className="form-label">Customer Name</label>
-                <select 
+                {/* <select 
                 name = "customer"
                 disabled={desc}
                 onChange={
@@ -77,7 +79,23 @@ import { useNavigate, useParams } from "react-router-dom";
                         <option selected={c.name==ticket.customer} value={c.name}>{c.name}</option>
                         )
                    }
-                </select>
+                </select> */}
+                <Dropdown value={ticket.customer}
+                onChange={
+                    (e)=>{
+                        let obj = {...ticket};
+                        obj.customer=e.value;
+                        setTicket(obj);
+                }
+            }
+                options={customers}
+                optionLabel="name"
+                placeholder="Select a Customer"
+                filter 
+                className="w-full"
+            />
+
+               
             </div>
             <div className="mb-3">
                 <label htmlFor="desc" className="form-label">Description</label>
@@ -104,7 +122,9 @@ import { useNavigate, useParams } from "react-router-dom";
                     className="form-select">
                    {
                     users.map(u=>
+                        
                         <option selected={u.name==ticket.assignedTo} value={u.name}>{u.name}</option>
+                        
                         )
                    }
                 </select>
