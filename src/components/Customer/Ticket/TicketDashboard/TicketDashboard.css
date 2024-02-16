@@ -1,0 +1,44 @@
+
+
+.TicketDashboard{
+    display: flex;
+    justify-content: space-around;
+}
+
+.tile{
+    height: 100px;
+    width: 200px;
+    margin: 40px;
+    border-radius: 8px;
+}
+
+.tile-all{
+    background-color: black;
+    color: white;
+}
+
+.tile-new{
+    background-color: #3167FB;
+    color: white;
+}
+
+.tile-accepted{
+    background-color: #01AB01 ;
+    color: black;
+}
+
+.tile-rejected{
+    background-color:#FF0000 ;
+    color:black ;
+}
+
+.tile-text{
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 30px;
+    text-align: center;
+}
+
+.tile-value{
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
+    text-align: center;
+}

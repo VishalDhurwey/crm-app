@@ -1,0 +1,9 @@
+.ticketheader{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.d-flex{
+    margin: 8px;
+}

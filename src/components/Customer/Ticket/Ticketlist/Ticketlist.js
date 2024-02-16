@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import Navbar from "../../Navbar/Navbar";
 import "./Ticketlist.css";
 import { useNavigate } from "react-router-dom";
+import Dashboard from "../../../Dashboard/Dashboard";
+import TicketDashboard from "../TicketDashboard/TicketDashboard";
 
 function Ticketlist(){
 
     const [tickets, setTickets] = useState([]);
+    const [filteredtickets, setfilteredTickets] = useState([]);
+    const [counts,setCounts] = useState({});
     const navigate = useNavigate();
 
     useEffect(()=>{
@@ -13,11 +17,25 @@ function Ticketlist(){
         .then((res) => res.json())
         .then((parsedres) => {
             setTickets(parsedres);
+            setfilteredTickets(parsedres);
+
+          let obj={};
+          obj.all = parsedres.length;
+          obj.new = parsedres.filter(t=>t.status=="New").length;
+          obj.progress = parsedres.filter(t=>t.status=="In Progress").length;
+          obj.assigned = parsedres.filter(t=>t.status=="Assigned").length;
+          obj.resolved = parsedres.filter(t=>t.status=="Resolved").length;
+          setCounts(obj);
         });
     },[])
 
     function handleeditclick(desc){
         navigate("/ticketform/"+ desc);
+    }
+
+    function handlesearch(key){
+    const result= tickets.filter(t=>t.desc.includes(key));
+    setfilteredTickets(result);
     }
 
 
@@ -26,9 +44,20 @@ function Ticketlist(){
         <div>
             <Navbar/>
 
+            <div className="container">
+
+            <TicketDashboard dashboardcounts={counts}/>
+
+            <hr/>
+
+            <div className="ticketheader">
             <a href="/ticketform" className="newbtn btn btn-success">New Ticket</a>
 
-            <div className="container">
+            <form className="d-flex" role="search">
+            <input onInput={(e)=>{handlesearch(e.target.value)}}  className="form-control me-2" type="search" placeholder="Search" aria-label="Search"></input>
+            {/* <button  className="btn btn-outline-success" type="submit">Search</button> */}
+            </form>
+            </div>
 
             <table className="table">
   <thead>
@@ -44,7 +73,7 @@ function Ticketlist(){
   </thead>
   <tbody>
     {
-        tickets.map((t)=>
+        filteredtickets.map((t)=>
     <tr>
       <td>{t.customer}</td>
       <td>{t.desc}</td>
