@@ -11,7 +11,7 @@ import { Dropdown } from 'primereact/dropdown';
         const[customers,setCustomers] = useState([]);
 
         const [ticket,setTicket]=useState({});
-        const [valueMissing, setValueMisssing]=useState(false);
+        const [valueMissing, setValueMissing]=useState(false);
         const navigate = useNavigate();
 
         const{desc} = useParams();
@@ -34,9 +34,9 @@ import { Dropdown } from 'primereact/dropdown';
         },[])
 
         function handlenewticketclick(){
-            setValueMisssing(false);
+            setValueMissing(false);
             if(!ticket.status){
-                setValueMisssing(true);
+                setValueMissing(true);
             }
             
             fetch("http://localhost:4000/api/ticket",{
@@ -75,16 +75,20 @@ import { Dropdown } from 'primereact/dropdown';
             }
                     className="form-select">
                    {
-                    customer.map(c=>
+                    customers.map(c=>
                         <option selected={c.name==ticket.customer} value={c.name}>{c.name}</option>
                         )
                    }
                 </select> */}
-                <Dropdown value={ticket.customer}
+                <Dropdown 
+                disabled={desc}
+                value={
+                   customers.find(c=> c.name==ticket.customer)  
+                }
                 onChange={
                     (e)=>{
                         let obj = {...ticket};
-                        obj.customer=e.value;
+                        obj.customer=e.value.name;
                         setTicket(obj);
                 }
             }
@@ -111,7 +115,7 @@ import { Dropdown } from 'primereact/dropdown';
             </div>
             <div className="mb-3">
                 <label className="form-label">Assigned To</label>
-                <select 
+                {/* <select 
                 onChange={
                     (e)=>{
                         let obj = {...ticket};
@@ -127,7 +131,24 @@ import { Dropdown } from 'primereact/dropdown';
                         
                         )
                    }
-                </select>
+                </select> */}
+
+            <Dropdown value={
+                   users.find(c=> c.name==ticket.assignedTo) 
+                }
+                onChange={
+                    (e)=>{
+                        let obj = {...ticket};
+                        obj.assignedTo=e.value.name;
+                        setTicket(obj);
+                }
+            }
+                options={users}
+                optionLabel="name"
+                placeholder="Select a User"
+                filter 
+                className="w-full"
+            />
             </div>
             <div className="mb-3">
             <label className="form-label">Status</label>
