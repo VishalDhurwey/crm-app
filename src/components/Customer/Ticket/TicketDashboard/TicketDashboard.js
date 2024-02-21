@@ -21,6 +21,10 @@ function TicketDashboard(props){
             <p className="tile-text">Resolved</p>
                 <p className="tile-value">{props.dashboardcounts.resolved}</p>
             </div>
+            <div className="tile tile-inprogress">
+            <p className="tile-text">In Progress</p>
+                <p className="tile-value">{props.dashboardcounts.inprogress}</p>
+            </div>
             
         </div>
     );

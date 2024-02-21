@@ -1,0 +1,16 @@
+.p-sidebar-close {
+    display: none !important;
+}
+
+.sidemenu{
+    padding: 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid lightgray;
+    font-weight: 600;
+}
+
+.menus {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}

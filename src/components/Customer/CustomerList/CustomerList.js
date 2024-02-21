@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../Navbar/Navbar";
 import Dashboard from "../../Dashboard/Dashboard";
+import Sidemenu from "../../Sidemenu/Sidemenu";
+import Navbar from "../Navbar/Navbar";
+
 
    function CustomerList() {
 
@@ -99,8 +102,7 @@ import Dashboard from "../../Dashboard/Dashboard";
 
     return(
         <div>
-        <NavBar/>
-
+            <NavBar/> 
         <div className="container">
         
         <Dashboard counts={counts}/>

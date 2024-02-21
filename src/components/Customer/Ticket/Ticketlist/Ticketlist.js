@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Navbar from "../../Navbar/Navbar";
 import "./Ticketlist.css";
 import { useNavigate } from "react-router-dom";
-import Dashboard from "../../../Dashboard/Dashboard";
 import TicketDashboard from "../TicketDashboard/TicketDashboard";
 
 function Ticketlist(){
@@ -20,11 +19,12 @@ function Ticketlist(){
             setfilteredTickets(parsedres);
 
           let obj={};
-          obj.all = parsedres.length;
+          obj.total = parsedres.length;
           obj.new = parsedres.filter(t=>t.status=="New").length;
           obj.progress = parsedres.filter(t=>t.status=="In Progress").length;
           obj.assigned = parsedres.filter(t=>t.status=="Assigned").length;
           obj.resolved = parsedres.filter(t=>t.status=="Resolved").length;
+          obj.inprogress = parsedres.filter(t=>t.status=="In Progress").length;
           setCounts(obj);
         });
     },[])
@@ -37,7 +37,21 @@ function Ticketlist(){
     const result= tickets.filter(t=>t.desc.includes(key));
     setfilteredTickets(result);
     }
-
+    
+    function getstatuscss(status){
+      if(status=="New"){
+        return "s_new" ;
+      }
+      else if(status=="Assigned"){
+        return "s_assigned";
+      }
+      else if(status=="Resolved"){
+        return "s_resolved";
+      }
+      else{
+        return "s_inprogress";
+      }
+    }
 
 
     return(
@@ -78,7 +92,7 @@ function Ticketlist(){
       <td>{t.customer}</td>
       <td>{t.desc}</td>
       <td>{t.assignedTo}</td>
-      <td>{t.status}</td>
+      <td className={getstatuscss(t.status)}>{t.status}</td>
       <td>{t.raisedOn}</td>
 
 

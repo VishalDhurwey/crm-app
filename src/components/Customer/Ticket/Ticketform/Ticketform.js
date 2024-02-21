@@ -165,7 +165,7 @@ import { Dropdown } from 'primereact/dropdown';
                     <option selected={"New"==ticket.status} value="New">New</option>
                     <option selected={"Assigned"==ticket.status} value="Assigned">Assigned</option>
                     <option selected={"In Progress"==ticket.status} value="In Progress">In Progress</option>
-                    <option selected={"Rsolved"==ticket.status} value="Rsolved">Rsolved</option>
+                    <option selected={"Resolved"==ticket.status} value="Resolved">Resolved</option>
                 </select>
             </div> 
             <div className="mb-3">

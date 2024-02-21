@@ -19,10 +19,15 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';  
 import 'primereact/resources/primereact.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import Navbar from './components/Customer/Navbar/Navbar';
+import Sidemenu from './components/Sidemenu/Sidemenu';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+   <div>
+      {/* <Navbar/>
+      <Sidemenu/> */}
    <BrowserRouter>
     <Routes>
         <Route path='/' element={
@@ -70,7 +75,7 @@ root.render(
         
     </Routes>
     </BrowserRouter>
-   
+    </div>
   </React.StrictMode>
 );
 

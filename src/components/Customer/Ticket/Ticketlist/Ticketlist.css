@@ -7,3 +7,23 @@
 .d-flex{
     margin: 8px;
 }
+
+.s_new{
+    color: white !important;
+    background-color: blue !important ;
+}
+
+.s_assigned{
+    color: black !important;
+    background-color: bisque !important;
+}
+
+.s_resolved{
+    color: white !important;
+    background-color: green !important;
+}
+
+.s_inprogress{
+    color: white !important;
+    background-color: red !important;
+}
