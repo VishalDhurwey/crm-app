@@ -1,11 +1,13 @@
 .Loginpage{
-    margin: 18% 40% ;
+    margin: 12% 40% ;
 }
 .form-label{
   display: flex;
   
 }
-.buttons{
+
+.form-button{
   display: flex;
-  
+  justify-content: space-between;
+  margin-top: 12px;
 }

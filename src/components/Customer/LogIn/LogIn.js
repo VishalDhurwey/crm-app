@@ -48,7 +48,9 @@ function LogIn(){
             }
 
             <div className="loginform">
-            
+
+            <h2>Login</h2>   
+            <hr/>
             <label className="form-label">username</label>
             <input
             onInput={(e)=>setLogindetails({...logindetails, username:e.target.value})}
@@ -60,10 +62,11 @@ function LogIn(){
             type="password" name="Password" className="form-control"></input>
         
             
-
+            <div className="form-button">
             <input onClick={handlelogin} className="buttons" type="button" value="Login"></input>
             <input onClick={handlesignup} className="buttons" type="button" value="Signup"></input>
-           
+            </div>
+            
             </div>
             
         
