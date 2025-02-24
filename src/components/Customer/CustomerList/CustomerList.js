@@ -90,6 +90,7 @@ import Navbar from "../Navbar/Navbar";
     }
 
     function handlesearch(key){
+        key = key.toUpperCase()
         if(!key || key.length==0){
             setFilteredcustomers(customers);
         }else
