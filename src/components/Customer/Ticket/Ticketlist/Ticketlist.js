@@ -1,116 +1,138 @@
 import { useEffect, useState } from "react";
-import Navbar from "../../Navbar/Navbar";
 import "./Ticketlist.css";
 import { useNavigate } from "react-router-dom";
-import TicketDashboard from "../TicketDashboard/TicketDashboard";
 
 function Ticketlist(){
-
     const [tickets, setTickets] = useState([]);
     const [filteredtickets, setfilteredTickets] = useState([]);
-    const [counts,setCounts] = useState({});
     const navigate = useNavigate();
 
-    useEffect(()=>{
-        fetch("http://localhost:4000/api/ticket")
+    useEffect(() => {
+        fetch("https://crm-app-api-ybms.onrender.com/api/ticket")
         .then((res) => res.json())
         .then((parsedres) => {
             setTickets(parsedres);
             setfilteredTickets(parsedres);
-
-          let obj={};
-          obj.total = parsedres.length;
-          obj.new = parsedres.filter(t=>t.status=="New").length;
-          obj.progress = parsedres.filter(t=>t.status=="In Progress").length;
-          obj.assigned = parsedres.filter(t=>t.status=="Assigned").length;
-          obj.resolved = parsedres.filter(t=>t.status=="Resolved").length;
-          obj.inprogress = parsedres.filter(t=>t.status=="In Progress").length;
-          setCounts(obj);
         });
-    },[])
+    }, []);
 
     function handleeditclick(desc){
-        navigate("/ticketform/"+ desc);
+        navigate("/ticketform/" + desc);
+    }
+
+    function handleNewTicket() {
+        navigate("/ticketform");
     }
 
     function handlesearch(key){
-    const result= tickets.filter(t=>t.desc.includes(key));
-    setfilteredTickets(result);
+        if (!key) {
+            setfilteredTickets(tickets);
+            return;
+        }
+        const result = tickets.filter(t => t.desc.toLowerCase().includes(key.toLowerCase()));
+        setfilteredTickets(result);
     }
     
     function getstatuscss(status){
-      if(status=="New"){
-        return "s_new" ;
-      }
-      else if(status=="Assigned"){
-        return "s_assigned";
-      }
-      else if(status=="Resolved"){
-        return "s_resolved";
-      }
-      else{
-        return "s_inprogress";
-      }
+        switch(status) {
+            case "New":
+                return "badge bg-info";
+            case "Assigned":
+                return "badge bg-warning";
+            case "Resolved":
+                return "badge bg-success";
+            default:
+                return "badge bg-secondary";
+        }
     }
-
 
     return(
-        <div>
-            <Navbar/>
-
-            <div className="container">
-
-            <TicketDashboard dashboardcounts={counts}/>
-
-            <hr/>
-
-            <div className="ticketheader">
-            <a href="/ticketform" className="newbtn btn btn-success">New Ticket</a>
-
-            <form className="d-flex" role="search">
-            <input onInput={(e)=>{handlesearch(e.target.value)}}  className="form-control me-2" type="search" placeholder="Search" aria-label="Search"></input>
-            {/* <button  className="btn btn-outline-success" type="submit">Search</button> */}
-            </form>
+        <div className="container">
+            <div className="page-header">
+                <h1>Ticket Management</h1>
+                <p>View and manage customer support tickets</p>
             </div>
 
-            <table className="table">
-  <thead>
-    <tr>
-      <th scope="col">Customer</th>
-      <th scope="col">Description</th>
-      <th scope="col">Assigned To</th>
-      <th scope="col">Status</th>
-      <th scope="col">Raised On</th>
-      <th scope="col">Update</th>
-      
-    </tr>
-  </thead>
-  <tbody>
-    {
-        filteredtickets.map((t)=>
-    <tr>
-      <td>{t.customer}</td>
-      <td>{t.desc}</td>
-      <td>{t.assignedTo}</td>
-      <td className={getstatuscss(t.status)}>{t.status}</td>
-      <td>{t.raisedOn}</td>
+            <div className="content-wrapper">
+                <div className="toolbar">
+                    <div className="search-box">
+                        <div className="input-group">
+                            <span className="input-group-text">
+                                <i className="bi bi-search"></i>
+                            </span>
+                            <input 
+                                type="search" 
+                                className="form-control" 
+                                placeholder="Search tickets..." 
+                                onChange={(e) => handlesearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <button 
+                        onClick={handleNewTicket} 
+                        className="btn btn-primary"
+                    >
+                        <i className="bi bi-plus-lg"></i>
+                        New Ticket
+                    </button>
+                </div>
 
-
-    <td> <button onClick={()=>{handleeditclick(t.desc)}} className="btn btn-warning">Edit</button> </td>
-     
-    
-    </tr>
-        )
-
-    }
-    
-    
-  </tbody>
-</table>
-
+                <div className="table-responsive">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Customer</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Assigned To</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Raised On</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredtickets.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="text-center py-4">
+                                        <div className="empty-state">
+                                            <i className="bi bi-ticket-detailed text-muted"></i>
+                                            <p>No tickets found</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredtickets.map((t) => (
+                                    <tr key={t.desc}>
+                                        <td>{t.customer}</td>
+                                        <td>{t.desc}</td>
+                                        <td>
+                                            {t.assignedTo || (
+                                                <span className="text-muted">Unassigned</span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <span className={getstatuscss(t.status)}>
+                                                {t.status}
+                                            </span>
+                                        </td>
+                                        <td>{t.raisedOn}</td>
+                                        <td>
+                                            <button 
+                                                onClick={() => handleeditclick(t.desc)} 
+                                                className="btn btn-sm btn-outline-primary"
+                                                title="Edit ticket"
+                                            >
+                                                <i className="bi bi-pencil"></i>
+                                                Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        
     );
 }
 

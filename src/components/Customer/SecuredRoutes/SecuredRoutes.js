@@ -1,30 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function SecuredRoutes(props){
+function SecuredRoutes({ children }) {
+    const [isLoading, setIsLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
 
-    const [loggedIn, setLogin] = useState(false);
-
-    useEffect(()=>{
-        
-        const isUserlogged = localStorage.getItem("loggedIn");
-        if(!isUserlogged || isUserlogged!="true"){
-            console.log("not logged in");
-            window.location.href="/login";
-        }else{
-            setLogin(true);
-        }
-    },[]);
-    
-
-    return(
-        <React.Fragment>
-            {
-                loggedIn ? props.children:null
+    useEffect(() => {
+        const checkAuth = () => {
+            const isUserLogged = localStorage.getItem("loggedIn");
+            if (!isUserLogged || isUserLogged !== "true") {
+                navigate("/login", { replace: true });
+            } else {
+                setIsLoggedIn(true);
             }
-        </React.Fragment>
-    )
+            setIsLoading(false);
+        };
 
+        checkAuth();
+    }, [navigate]);
+
+    if (isLoading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
+    return isLoggedIn ? children : null;
 }
 
 export default SecuredRoutes;

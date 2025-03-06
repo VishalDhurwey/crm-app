@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap';
-import {BrowserRouter,Route,Routes} from 'react-router-dom';
+import {BrowserRouter, Route, Routes, Navigate} from 'react-router-dom';
 import CustomerList from './components/Customer/CustomerList/CustomerList';
 import CustomerForm from './components/Customer/CustomerForm/CustomerForm';
 import SignUp from './components/Customer/SignUp/SignUp';
@@ -13,64 +13,130 @@ import Userlist from './components/Customer/User/Userlist';
 import UserForm from './components/Customer/User/UserForm/UserForm';
 import Ticketlist from './components/Customer/Ticket/Ticketlist/Ticketlist';
 import Ticketform from './components/Customer/Ticket/Ticketform/Ticketform';
+import Dashboard from './components/Dashboard/Dashboard';
 
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';  
 import 'primereact/resources/primereact.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import Navbar from './components/Customer/Navbar/Navbar';
-import Sidemenu from './components/Sidemenu/Sidemenu';
+
+const AppLayout = ({ children }) => (
+  <>
+    <Navbar />
+    {children}
+  </>
+);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
    <div>
-      {/* <Navbar/>
-      <Sidemenu/> */}
    <BrowserRouter>
     <Routes>
+        {/* Auth routes */}
+        <Route path='/login' element={<LogIn/>} />
+        <Route path='/signup' element={<SignUp/>} />
+        
+        {/* Dashboard - main landing page when logged in */}
         <Route path='/' element={
-           <SecuredRoutes>
-            <CustomerList/>
-           </SecuredRoutes>
-        }></Route> 
-         <Route path='/tickets' element={
-           <SecuredRoutes>
-            <Ticketlist/>
-           </SecuredRoutes>
-        }></Route>
-        <Route path='/ticketform' element={
-           <SecuredRoutes>
-            <Ticketform/>
-           </SecuredRoutes>
-        }></Route> 
-
-         <Route path='ticketform/:desc' element={
-            <SecuredRoutes>
-         <Ticketform/>
-         </SecuredRoutes>
-         }></Route>
-
-
-        <Route path='/users' element={
-           <SecuredRoutes>
-            <Userlist/>
-           </SecuredRoutes>
-        }></Route> 
-        <Route path='/userForm' element={
-           <SecuredRoutes>
-            <UserForm/>
-           </SecuredRoutes>
-        }></Route> 
-        <Route path='/signup' element={<SignUp/>}></Route>
-        <Route path='/login' element={<LogIn/>}></Route>
-        <Route path='/form' element={
           <SecuredRoutes>
-            <CustomerForm/>
+            <AppLayout>
+              <Dashboard />
+            </AppLayout>
           </SecuredRoutes>
-        }></Route>
-        <Route path='form/:customername' element={<CustomerForm/>}></Route>
-        <Route path='userform/:username' element={<UserForm/>}></Route>
+        } />
+        
+        <Route path='/dashboard' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <Dashboard />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+
+        {/* Customer routes */}
+        <Route path='/customers' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <CustomerList />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+        
+        <Route path='/customerform' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <CustomerForm />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+        
+        <Route path='/customerform/:customername' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <CustomerForm />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+
+        {/* Ticket routes */}
+        <Route path='/tickets' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <Ticketlist />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+        
+        <Route path='/ticketform' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <Ticketform />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+
+        <Route path='/ticketform/:desc' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <Ticketform />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+
+        {/* User routes */}
+        <Route path='/users' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <Userlist />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+        
+        <Route path='/userform' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <UserForm />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+        
+        <Route path='/userform/:username' element={
+          <SecuredRoutes>
+            <AppLayout>
+              <UserForm />
+            </AppLayout>
+          </SecuredRoutes>
+        } />
+
+        {/* Catch all - redirect to dashboard if logged in, otherwise to login */}
+        <Route path="*" element={
+          <SecuredRoutes>
+            <Navigate to="/dashboard" replace />
+          </SecuredRoutes>
+        } />
         
     </Routes>
     </BrowserRouter>
@@ -78,7 +144,4 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

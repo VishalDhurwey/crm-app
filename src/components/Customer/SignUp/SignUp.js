@@ -11,7 +11,7 @@ function SignUp(){
     
     function handleregister(){
         console.log(user);
-        fetch("http://localhost:4000/api/user/signup",{
+        fetch("https://crm-app-api-ybms.onrender.com/api/user/signup",{
             method:"POST",
             headers:{
                 "Content-Type":"application/json"

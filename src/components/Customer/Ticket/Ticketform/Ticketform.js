@@ -1,203 +1,164 @@
 import { useEffect, useState } from "react";
-import Navbar from "../../Navbar/Navbar";
 import "./Ticketform.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { Dropdown } from 'primereact/dropdown';
-        
 
-    function Ticketform(){
+function Ticketform() {
+    const [users, setUsers] = useState([]);
+    const [customers, setCustomers] = useState([]);
+    const [ticket, setTicket] = useState({});
+    const [valueMissing, setValueMissing] = useState(false);
+    const navigate = useNavigate();
+    const { desc } = useParams();
 
-        const[users,setUsers] = useState([]);
-        const[customers,setCustomers] = useState([]);
-
-        const [ticket,setTicket]=useState({});
-        const [valueMissing, setValueMissing]=useState(false);
-        const navigate = useNavigate();
-
-        const{desc} = useParams();
-
-        useEffect(()=>{
-            fetch("http://localhost:4000/api/user")
-            .then((res)=>res.json())
-            .then((parsedRes)=>setUsers(parsedRes));
-
-            fetch("http://localhost:4000/api/customer")
-            .then((res)=>res.json())
-            .then(parsedRes => setCustomers(parsedRes));
-
-            if(desc){
-            fetch("http://localhost:4000/api/ticket/"+desc)
-            .then((res)=>res.json())
-            .then(parsedRes => setTicket(parsedRes));
+    useEffect(() => {
+        Promise.all([
+            fetch("https://crm-app-api-ybms.onrender.com/api/user").then(res => res.json()),
+            fetch("https://crm-app-api-ybms.onrender.com/api/customer").then(res => res.json()),
+            desc ? fetch("https://crm-app-api-ybms.onrender.com/api/ticket/" + desc).then(res => res.json()) : Promise.resolve(null)
+        ]).then(([users, customers, ticketData]) => {
+            setUsers(users);
+            setCustomers(customers);
+            if (ticketData) {
+                setTicket(ticketData);
             }
-            
-        },[])
+        }).catch(error => {
+            console.error("Error fetching data:", error);
+        });
+    }, [desc]);
 
-        function handlenewticketclick(){
-            setValueMissing(false);
-            if(!ticket.status){
-                setValueMissing(true);
-            }
-            
-            fetch("http://localhost:4000/api/ticket",{
-                method:desc ? "PUT": "POST",
-                body:JSON.stringify(ticket),
-                headers:{"Content-Type":"application/json"},
-            })
-            .then((res)=>{
-                navigate("/tickets");
-            }).catch((err)=>{
-                console.log(err);
-            })
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setValueMissing(false);
+
+        if (!ticket.status) {
+            setValueMissing(true);
+            return;
         }
 
+        fetch("https://crm-app-api-ybms.onrender.com/api/ticket", {
+            method: desc ? "PUT" : "POST",
+            body: JSON.stringify(ticket),
+            headers: { "Content-Type": "application/json" },
+        })
+        .then(() => {
+            navigate("/tickets");
+        })
+        .catch((err) => {
+            console.error("Error submitting ticket:", err);
+        });
+    };
 
-        return(
-            <div>
-                <Navbar/>
-            <div className="container">
-                {   valueMissing &&
-                    <div className="warning alert alert-warning" role="alert">
-                    Please Select Status.!
-                  </div>
-                }
-            <div className="mb-3">
-                <label className="form-label">Customer Name</label>
-                {/* <select 
-                name = "customer"
-                disabled={desc}
-                onChange={
-                    (e)=>{
-                        let obj = {...ticket};
-                        obj.customer=e.target.value;
-                        setTicket(obj);
-                }
-            }
-                    className="form-select">
-                   {
-                    customers.map(c=>
-                        <option selected={c.name==ticket.customer} value={c.name}>{c.name}</option>
-                        )
-                   }
-                </select> */}
-                <Dropdown 
-                disabled={desc}
-                value={
-                   customers.find(c=> c.name==ticket.customer)  
-                }
-                onChange={
-                    (e)=>{
-                        let obj = {...ticket};
-                        obj.customer=e.value.name;
-                        setTicket(obj);
-                }
-            }
-                options={customers}
-                optionLabel="name"
-                placeholder="Select a Customer"
-                filter 
-                className="w-full"
-            />
+    const updateTicket = (field, value) => {
+        setTicket(prev => ({ ...prev, [field]: value }));
+    };
 
-               
-            </div>
-            <div className="mb-3">
-                <label htmlFor="desc" className="form-label">Description</label>
-                <input
-                name="desc"
-                    value={ticket.desc}
-                    onInput={(e)=>{
-                        let obj = {...ticket};
-                        obj.desc=e.target.value;
-                        setTicket(obj);
-                    }}
-                 type="text" className="form-control"></input>
-            </div>
-            <div className="mb-3">
-                <label className="form-label">Assigned To</label>
-                {/* <select 
-                onChange={
-                    (e)=>{
-                        let obj = {...ticket};
-                        obj.assignedTo=e.target.value;
-                        setTicket(obj);
-                }
-            }
-                    className="form-select">
-                   {
-                    users.map(u=>
-                        
-                        <option selected={u.name==ticket.assignedTo} value={u.name}>{u.name}</option>
-                        
-                        )
-                   }
-                </select> */}
+    const statusOptions = [
+        { label: "New", value: "New" },
+        { label: "Assigned", value: "Assigned" },
+        { label: "In Progress", value: "In Progress" },
+        { label: "Resolved", value: "Resolved" }
+    ];
 
-            <Dropdown value={
-                   users.find(c=> c.name==ticket.assignedTo) 
-                }
-                onChange={
-                    (e)=>{
-                        let obj = {...ticket};
-                        obj.assignedTo=e.value.name;
-                        setTicket(obj);
-                }
-            }
-                options={users}
-                optionLabel="name"
-                placeholder="Select a User"
-                filter 
-                className="w-full"
-            />
-            </div>
-            <div className="mb-3">
-            <label className="form-label">Status</label>
-                <select 
-                onChange={
-                    (e)=>{
-                        let obj = {...ticket};
-                        obj.status=e.target.value;
-                        setTicket(obj);
-                }
-            }
-                    className="form-select">
-                    <option value="Select">Please Select</option>
-                    <option selected={"New"==ticket.status} value="New">New</option>
-                    <option selected={"Assigned"==ticket.status} value="Assigned">Assigned</option>
-                    <option selected={"In Progress"==ticket.status} value="In Progress">In Progress</option>
-                    <option selected={"Resolved"==ticket.status} value="Resolved">Resolved</option>
-                </select>
-            </div> 
-            <div className="mb-3">
-                <label className="form-label">Raised On</label>
-                <input
-                name="raisedOn"
-                    value={ticket.raisedOn}
-                    readOnly={desc}
-                    onInput={(e)=>{
-                        let obj = {...ticket};
-                        obj.raisedOn=e.target.value;
-                        setTicket(obj);
-                    }}
-                type="date" className="form-control"></input>
-            </div>
+    return (
+        <div className="container mt-4">
+            <div className="card">
+                <div className="card-header">
+                    <h2 className="mb-0">{desc ? 'Update Ticket' : 'Create New Ticket'}</h2>
+                </div>
+                <div className="card-body">
+                    {valueMissing && (
+                        <div className="alert alert-warning" role="alert">
+                            Please select a status for the ticket
+                        </div>
+                    )}
 
-            <button onClick={handlenewticketclick} className="btn btn-success float-end">
-               
-               {
-                desc &&
-                <span> Update Ticket</span>
-               }
-               {
-                !desc &&
-                <span> Create Ticket</span>
-               }
-                
-                
-                </button>
-            </div>
-            </div>
-        )
-    }
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4">
+                            <label className="form-label">Customer Name</label>
+                            <Dropdown 
+                                disabled={desc}
+                                value={customers.find(c => c.name === ticket.customer)}
+                                onChange={(e) => updateTicket('customer', e.value.name)}
+                                options={customers}
+                                optionLabel="name"
+                                placeholder="Select a Customer"
+                                filter
+                                className="w-full"
+                            />
+                        </div>
 
-    export default Ticketform;
+                        <div className="mb-4">
+                            <label className="form-label">Description</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={ticket.desc || ''}
+                                onChange={(e) => updateTicket('desc', e.target.value)}
+                                placeholder="Enter ticket description"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="form-label">Assigned To</label>
+                            <Dropdown 
+                                value={users.find(u => u.name === ticket.assignedTo)}
+                                onChange={(e) => updateTicket('assignedTo', e.value.name)}
+                                options={users}
+                                optionLabel="name"
+                                placeholder="Select a User"
+                                filter
+                                className="w-full"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="form-label">Status</label>
+                            <select 
+                                className="form-select"
+                                value={ticket.status || ''}
+                                onChange={(e) => updateTicket('status', e.target.value)}
+                            >
+                                <option value="">Select Status</option>
+                                {statusOptions.map(option => (
+                                    <option 
+                                        key={option.value} 
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="form-label">Raised On</label>
+                            <input
+                                type="date"
+                                className="form-control"
+                                value={ticket.raisedOn || ''}
+                                onChange={(e) => updateTicket('raisedOn', e.target.value)}
+                                readOnly={desc}
+                            />
+                        </div>
+
+                        <div className="d-flex justify-content-between align-items-center">
+                            <button 
+                                type="button" 
+                                className="btn btn-secondary"
+                                onClick={() => navigate('/tickets')}
+                            >
+                                Cancel
+                            </button>
+                            <button type="submit" className="btn btn-success">
+                                {desc ? 'Update Ticket' : 'Create Ticket'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default Ticketform;

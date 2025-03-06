@@ -1,210 +1,230 @@
 import "./CustomerList.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "../Navbar/Navbar";
-import Dashboard from "../../Dashboard/Dashboard";
-import Sidemenu from "../../Sidemenu/Sidemenu";
-import Navbar from "../Navbar/Navbar";
 
-
-   function CustomerList() {
-
-    const [customers, setCustomers]=useState([]);
-    const [filteredcustomers, setFilteredcustomers] = useState([]);
-    const [counts, setCounts] = useState({});
-    const [pages, setPages] = useState([]);
+function CustomerList() {
+    const [customers, setCustomers] = useState([]);
+    const [filteredCustomers, setFilteredCustomers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
     
-
     const navigate = useNavigate();
 
-    useEffect(()=>{
-        load(1);
-    },[]);
+    useEffect(() => {
+        loadCustomers(1);
+    }, []);
 
-    function load(pageno){
-        fetch("http://localhost:4000/api/customer/page/"+pageno)
-        .then(res=>{ 
-         return  res.json()
-        })
-        .then((res)=>
-        {
-        setCustomers(res.records);
-        setFilteredcustomers(res.records);
-
-        let newcounts = res.records.filter(c=> c.status=="New").length;
-        let newaccepted = res.records.filter(c=> c.status=="Accepted").length;
-        let newrejected = res.records.filter(c=> c.status=="Rejected").length;
-        let countobj = {
-            "new":newcounts,
-            "accepted":newaccepted,
-            "rejected":newrejected,
-            "total":res.records.length
-        };
-        setCounts(countobj);
-
-        let totalPages = Math.floor(res.totalCount/90);
-        let arrayofpages = new Array(totalPages).fill(0);
-        setPages(arrayofpages); 
-
-
+    const loadCustomers = (pageNo) => {
+        setLoading(true);
+        fetch("https://crm-app-api-ybms.onrender.com/api/customer/page/" + pageNo)
+            .then(res => res.json())
+            .then((res) => {
+                // Add random dummy websites for customers
+                const customersWithWebsites = res.records.map(customer => ({
+                    ...customer,
+                    website: customer.website || `https://www.${customer.name.toLowerCase().replace(/\s+/g, '')}.com`
+                }));
+                setCustomers(customersWithWebsites);
+                setFilteredCustomers(customersWithWebsites);
+                setCurrentPage(pageNo);
+                setTotalPages(Math.ceil(res.totalCount / 90));
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error loading customers:", error);
+                setLoading(false);
+            });
+    };
+    
+    const handleNewCustomer = () => {
+        navigate("/customerform");
+    };
+    
+    const handleEdit = (name) => {
+        navigate("/customerform/" + name);
+    };
+    
+    const handleDelete = (name) => {
+        if (window.confirm("Are you sure you want to delete this customer?")) {
+            fetch("https://crm-app-api-ybms.onrender.com/api/customer/" + name, {
+                method: "DELETE"
+            })
+            .then(res => res.json())
+            .then(() => {
+                loadCustomers(currentPage);
+            })
+            .catch(error => {
+                console.error("Error deleting customer:", error);
+            });
         }
-        );
-    }
-    
-    function handleNewCustomerClick(){
-        navigate("form");
-    }
-    function handleSignUp(){
-        navigate("SignUp");
-    }
-    function handleLogIn(){
-        navigate("LogIn");
-    }
-    
-    function handleEditClick(name){
-         
-         navigate("/form/" + name)
-    }
-    
-    function handleDeleteClick(name){
-        fetch("http://localhost:4000/api/customer/" +name,{
-            method:"delete"
-        })
-        .then(res=>{return res.json();})
-        .then(res=>{setCustomers(res);});
-        window.location.reload();
-        
-        
-    }   
+    };   
 
-    function getStatusCSS(status){
-        if(status=="New"){
-            return "st_blue";
+    const getStatusBadgeClass = (status) => {
+        switch (status.toLowerCase()) {
+            case "new": return "badge bg-info";
+            case "accepted": return "badge bg-success";
+            case "rejected": return "badge bg-danger";
+            default: return "badge bg-secondary";
         }
-        else if(status=="Accepted"){
-            return "st_green";
+    };
+
+    const handleSearch = (value) => {
+        setSearchTerm(value);
+        if (!value.trim()) {
+            setFilteredCustomers(customers);
+        } else {
+            const searchValue = value.toLowerCase();
+            const filtered = customers.filter(customer => 
+                customer.name.toLowerCase().includes(searchValue)
+            );
+            setFilteredCustomers(filtered);
         }
-        else{
-            return "st_red";
-        }
-    }
+    };
 
-    function handlesearch(key){
-        key = key.toUpperCase()
-        if(!key || key.length==0){
-            setFilteredcustomers(customers);
-        }else
-            {
-        const result = customers.filter(c=> c.name.includes(key));
-        setFilteredcustomers([...result]);
-    }
-    }
+    return (
+        <div className="customer-list-container">
+            <div className="page-header">
+                <div className="header-content">
+                    <h1>Customer Management</h1>
+                    <p>Manage and track all your customer information</p>
+                </div>
+            </div>
 
+            <div className="content-wrapper">
+                <div className="toolbar">
+                    <div className="search-box">
+                        <div className="input-group">
+                            <span className="input-group-text">
+                                <i className="bi bi-search"></i>
+                            </span>
+                            <input 
+                                type="search" 
+                                className="form-control"
+                                placeholder="Search by customer name..." 
+                                value={searchTerm}
+                                onChange={(e) => handleSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <button 
+                        onClick={handleNewCustomer} 
+                        className="btn btn-primary"
+                    >
+                        <i className="bi bi-plus-lg"></i> Add New Customer
+                    </button>
+                </div>
 
-    return(
-        <div>
-            <NavBar/> 
-        <div className="container">
-        
-        <Dashboard counts={counts}/>
+                {loading ? (
+                    <div className="text-center my-5">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                ) : filteredCustomers.length === 0 ? (
+                    <div className="alert alert-info" role="alert">
+                        <i className="bi bi-info-circle me-2"></i>
+                        No customers found matching "{searchTerm}". Try a different search term or add a new customer.
+                    </div>
+                ) : (
+                    <div className="table-responsive">
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Website</th>
+                                    <th>Turnover</th>
+                                    <th>Employees</th>
+                                    <th>Status</th>
+                                    <th>CEO</th>
+                                    <th>Est. Year</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredCustomers.map(customer => (
+                                    <tr key={customer.name}>
+                                        <td>{customer.name}</td>
+                                        <td>
+                                            <a href={customer.website} 
+                                               target="_blank" 
+                                               rel="noopener noreferrer"
+                                               className="website-link"
+                                            >
+                                                <i className="bi bi-globe me-1"></i>
+                                                {customer.website.replace(/^https?:\/\/(www\.)?/, '')}
+                                            </a>
+                                        </td>
+                                        <td>${customer.turnover.toLocaleString()}</td>
+                                        <td>{customer.employees.toLocaleString()}</td>
+                                        <td>
+                                            <span className={getStatusBadgeClass(customer.status)}>
+                                                {customer.status}
+                                            </span>
+                                        </td>
+                                        <td>{customer.ceo}</td>
+                                        <td>{customer.year}</td>
+                                        <td>
+                                            <div className="btn-group">
+                                                <button 
+                                                    onClick={() => handleEdit(customer.name)} 
+                                                    className="btn btn-sm btn-outline-primary"
+                                                    title="Edit customer"
+                                                >
+                                                    <i className="bi bi-pencil"></i>
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDelete(customer.name)} 
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    title="Delete customer"
+                                                >
+                                                    <i className="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>   
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
 
-        <hr/>
-        <div className="header2">
-        <button onClick={handleNewCustomerClick} className="newcustomer btn btn-success">New Customer</button>  
-        
-        <form className="d-flex" role="search">
-        <input onInput={(e)=>{handlesearch(e.target.value)}} className="form-control me-2" type="search" placeholder="Search" aria-label="Search"></input>
-        {/* <button  className="btn btn-outline-success" type="submit">Search</button> */}
-        </form>
-        </div>
-       
-        
-
-{
-    filteredcustomers.length==0 && 
-    <div className="alert alert-primary" role="alert">
-    No Customers are available in system !
-    </div>
-}
-
-{
-
-filteredcustomers.length>0 &&
-<div className="table-parent">
-<table className="table">
-<thead>
-    <tr>
-       <th scope="col">Name</th>
-       <th scope="col">Website</th>
-       <th scope="col">Turnover</th>
-       <th scope="col">NumberOfEmployees</th>
-       <th scope="col">Status</th>
-       <th scope="col">CEO</th>
-       <th scope="col">Established Year</th>
-    </tr>
-</thead>
-<tbody>
-    {
-        filteredcustomers.map(c=>
-         
-            <tr>
-            <td>{c.name}</td>
-            <td>{c.website}</td>
-            <td>{c.turnover}</td>
-            <td>{c.employees}</td>
-            <td className={getStatusCSS(c.status)}>
-                {c.status}
-            </td>
-            <td>{c.ceo}</td>
-            <td>{c.year}</td>
-            <td>
-            <button onClick={()=>handleEditClick(c.name)} className="btn btn-warning">Edit</button>
-            </td>
-            <td>
-            <button onClick={()=>handleDeleteClick(c.name)} className="btn btn-danger">Delete</button>
-            </td>   
-            </tr>
-           )
-           
-    }
-    
-    
-
-  
-
-</tbody>
-</table>
-
-
-<nav aria-label="Page-bar">
-     <ul className="pagination">
-     <li className="page-item">
-      <a className="page-link" href="#">Previous 
-      </a>
-    </li>
-    {
-        pages.map((p,i)=>
-            <li className="page-item"><button className="page-link"onClick={()=>{load(i+1)}}>{i+1}</button></li>
-            )
-    }
-    
-    <li className="page-item">
-    <a className="page-link" href="#">Next 
-      </a>
-    </li>
-    </ul>
-    </nav>
-
-</div>
-
-}
-
-
-     
-
-        </div>
+                        <nav aria-label="Customer list pagination" className="d-flex justify-content-center mt-4">
+                            <ul className="pagination">
+                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                    <button 
+                                        className="page-link" 
+                                        onClick={() => loadCustomers(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                    >
+                                        <i className="bi bi-chevron-left"></i>
+                                    </button>
+                                </li>
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                        <button 
+                                            className="page-link" 
+                                            onClick={() => loadCustomers(i + 1)}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    </li>
+                                ))}
+                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                    <button 
+                                        className="page-link" 
+                                        onClick={() => loadCustomers(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                    >
+                                        <i className="bi bi-chevron-right"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                )}
+            </div>
         </div>
     );
-   };
+}
 
-   export default CustomerList;
+export default CustomerList;
