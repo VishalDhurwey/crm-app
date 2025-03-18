@@ -83,6 +83,7 @@ function LogIn(){
                         <input
                             type="text"
                             className="form-control"
+                            placeholder="asd"
                             value={logindetails.username}
                             onChange={(e) => setLogindetails({...logindetails, username: e.target.value})}
                             required
@@ -97,6 +98,7 @@ function LogIn(){
                         <input 
                             type="password"
                             className="form-control"
+                            placeholder="asd"
                             value={logindetails.password}
                             onChange={(e) => setLogindetails({...logindetails, password: e.target.value})}
                             required
